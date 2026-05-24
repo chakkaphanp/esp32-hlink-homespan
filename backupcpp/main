@@ -1,0 +1,281 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <time.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <SPI.h>
+#include <lvgl.h>
+#include "HomeSpan.h"
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+#include <Adafruit_BMP280.h>
+#include <IRremoteESP8266.h>
+#include <IRrecv.h>
+#include <IRutils.h>
+
+const uint8_t kTimeout = 50;
+const uint16_t kCaptureBufferSize = 1024;
+
+#define IR_RECEIVE_PIN 23 // IR Receiver pin (if using an IR remote for additional control)
+
+IRrecv irrecv(IR_RECEIVE_PIN, kCaptureBufferSize, kTimeout, true);
+decode_results results;
+
+LV_FONT_DECLARE(lv_font_montserrat_24);
+LV_FONT_DECLARE(lv_font_montserrat_48);
+
+// Set your WiFi credentials here
+const char* ssid = "Portico";
+const char* password = "asdf1234";
+
+// NTP servers
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 25200; // Adjust for your timezone if needed
+const int   daylightOffset_sec = 0;
+
+// LCD configuration (ST7789 SPI)
+// Note: ESP32-C6 SPI pins may vary by board. 
+// These are typical placeholders. UPDATE THESE PINS to match your exact board's wiring.
+// Correct pins for Waveshare ESP32-C6-LCD-1.47
+#define TFT_CS    14
+#define TFT_DC    15
+#define TFT_RST   21
+#define TFT_MOSI  6
+#define TFT_SCLK  7
+#define TFT_BL    22  // LCD Backlight (Set HIGH to turn on)
+
+
+/* LVGL display resolution */
+static const uint16_t screenWidth  = 320;
+static const uint16_t screenHeight = 172;
+
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf[screenWidth * 10];
+
+// I2C pins for BME280
+#define I2C_SDA 4
+#define I2C_SCL 5
+
+Adafruit_BME280 bme;
+bool bme_status = false;
+
+Adafruit_BMP280 bmp(&Wire);
+bool bmp_status = false;
+
+// Initialize Adafruit ST7789
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+
+#define WAKE_BUTTON_PIN 9 // HomeSpan Control Button
+
+unsigned long lastActivityTime = 0;
+const unsigned long screenTimeout = 60000; // 60 seconds
+bool isScreenOn = true;
+
+/* Display flushing */
+void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
+    uint32_t w = (area->x2 - area->x1 + 1);
+    uint32_t h = (area->y2 - area->y1 + 1);
+
+    tft.startWrite();
+    tft.setAddrWindow(area->x1, area->y1, w, h);
+    tft.writePixels((uint16_t *)&color_p->full, w * h, true, true);
+    tft.endWrite();
+
+    lv_disp_flush_ready(disp);
+}
+
+lv_obj_t *ui_time_label;
+lv_obj_t *ui_date_label;
+lv_obj_t *ui_temp_label;
+lv_obj_t *ui_hum_label;
+lv_obj_t *ui_pres_label;
+
+lv_obj_t *ui_ir_label;
+
+
+bool lastButtonState = HIGH;
+
+
+
+void setup() {
+  Serial.begin(115200);
+
+  // 1. Turn on the backlight (CRITICAL)
+  pinMode(TFT_BL, OUTPUT);
+  //digitalWrite(TFT_BL, HIGH);
+  analogWrite(TFT_BL, 32); // Set backlight brightness (0-255)
+
+  //setupIMU();
+
+  // Initialize the TFT
+  // The display is 172x320
+  tft.init(172, 320); 
+  tft.setRotation(1); // Set to landscape mode if desired (0-3)
+  
+  // Initialize LVGL
+  lv_init();
+  lv_disp_draw_buf_init(&draw_buf, buf, NULL, screenWidth * 10);
+
+  /*Initialize the display*/
+  static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+  /*Change the following line to your display resolution*/
+  disp_drv.hor_res = screenWidth;
+  disp_drv.ver_res = screenHeight;
+  disp_drv.flush_cb = my_disp_flush;
+  disp_drv.draw_buf = &draw_buf;
+  lv_disp_drv_register(&disp_drv);
+
+  /*Create a simple label*/
+  ui_time_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_time_label, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_text_font(ui_time_label, &lv_font_montserrat_24, 0);
+  lv_label_set_text(ui_time_label, "Initializing...");
+  
+  tft.fillScreen(ST77XX_BLACK); // We can still use GFX for simple splash or just let LVGL handle it
+    
+  delay(1000);    
+ 
+  // After sync, clear and let LVGL take over
+  lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), 0);
+  lv_obj_clean(lv_scr_act());
+
+  /*// Enable internal pullups just in case the breakout board lacks them
+  pinMode(I2C_SDA, INPUT_PULLUP);
+  pinMode(I2C_SCL, INPUT_PULLUP);
+
+  // Initialize I2C and BME280/BMP280
+  Wire.begin(I2C_SDA, I2C_SCL);
+  Wire.setClock(100000); // Set lower clock speed for better reliability
+  
+  // Wait a bit after setting up I2C for stability
+  delay(100);
+
+  // Scan for I2C devices to help debug wiring
+  Serial.print("\r\nScanning I2C bus...\r\n");
+  byte error, address;
+  int nDevices = 0;
+  for(address = 1; address < 127; address++ ) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.print(" !\r\n");
+      nDevices++;
+    } else if (error == 4) {
+      Serial.print("Unknown error at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.print("\r\n");
+    }
+  }
+  if (nDevices == 0) Serial.print("No I2C devices found\r\n");
+  else Serial.print("done\r\n");
+
+  bme_status = bme.begin(0x76, &Wire);
+  if (!bme_status) {
+    bme_status = bme.begin(0x77, &Wire);
+  }
+  
+  if (!bme_status) {
+    Serial.print("Could not find a valid BME280 sensor, trying BMP280...\r\n");
+    bmp_status = bmp.begin(0x76);
+    if (!bmp_status) {
+      bmp_status = bmp.begin(0x77);
+      if (!bmp_status) {
+        Serial.print("Could not find a valid BMP280 sensor either, check wiring!\r\n");
+      } else {
+        Serial.print("Found BMP280 sensor!\r\n");
+      }
+    } else {
+      Serial.print("Found BMP280 sensor!\r\n");
+    }
+  } else {
+    Serial.print("Found BME280 sensor!\r\n");
+  }
+*/
+  // Create Date Label
+  ui_date_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_date_label, LV_ALIGN_CENTER, 0, -50);
+  lv_obj_set_style_text_font(ui_date_label, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_color(ui_date_label, lv_color_white(), 0);
+
+  // Create Time Label
+  ui_time_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_time_label, LV_ALIGN_CENTER, 0, -10);
+  lv_obj_set_style_text_font(ui_time_label, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_color(ui_time_label, lv_color_white(), 0);
+
+  // Create Temperature Label
+  ui_temp_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_temp_label, LV_ALIGN_CENTER, -100, 45);
+  lv_obj_set_style_text_font(ui_temp_label, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_color(ui_temp_label, lv_palette_main(LV_PALETTE_RED), 0);
+  lv_label_set_text(ui_temp_label, "--.- C");
+
+  // Create Humidity Label
+  ui_hum_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_hum_label, LV_ALIGN_CENTER, 0, 45);
+  lv_obj_set_style_text_font(ui_hum_label, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_color(ui_hum_label, lv_palette_main(LV_PALETTE_BLUE), 0);
+  lv_label_set_text(ui_hum_label, "--.- %");
+
+  // Create Pressure Label
+  ui_pres_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_pres_label, LV_ALIGN_CENTER, 100, 45);
+  lv_obj_set_style_text_font(ui_pres_label, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_color(ui_pres_label, lv_palette_main(LV_PALETTE_GREEN), 0);
+  lv_label_set_text(ui_pres_label, "---- hPa");
+  
+  // Create IR Label
+  ui_ir_label = lv_label_create(lv_scr_act());
+  lv_obj_align(ui_ir_label, LV_ALIGN_BOTTOM_MID, 0, -5);
+  lv_obj_set_style_text_font(ui_ir_label, &lv_font_montserrat_24, 0);
+  lv_obj_set_style_text_color(ui_ir_label, lv_palette_main(LV_PALETTE_ORANGE), 0);
+  lv_label_set_text(ui_ir_label, "IR: N/A");
+
+  //initialize IR Receiver
+  Serial.println("Initializing IR Receiver...");
+  irrecv.enableIRIn();  // Start the receiver
+  delay(5000); // Short delay to ensure IR receiver is ready
+  Serial.println("Setup complete!");
+}
+
+void loop() {
+  // Keep LVGL timers running
+  //lv_timer_handler(); 
+
+  static unsigned long lastMillis = 0;
+  static unsigned long lastSensorMillis = 0;
+    
+  // Update sensor data every 5 seconds
+  /*if (millis() - lastSensorMillis > 10000) {
+    lastSensorMillis = millis();
+    updateSensorData();
+  }*/
+
+  // Check for incoming IR signals
+  if (irrecv.decode(&results)) {
+    Serial.print("IR Protocol: ");
+    Serial.print(typeToString(results.decode_type));
+    Serial.print(", Code: 0x");
+    Serial.println((uint32_t)results.value, HEX);
+
+    if (ui_ir_label) {
+      char irStr[32];
+      if (results.decode_type == UNKNOWN) {
+        snprintf(irStr, sizeof(irStr), "IR: UNKNOWN");
+      } else {
+        snprintf(irStr, sizeof(irStr), "IR: 0x%X", (uint32_t)results.value);
+      }
+      lv_label_set_text(ui_ir_label, irStr);
+    }    
+
+    irrecv.resume(); // Enable receiving of the next value
+  }
+  //Serial.println("Loop running...");
+  delay(500); // Give the system some time to breathe
+}

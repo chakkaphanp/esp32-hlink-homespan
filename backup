@@ -1,0 +1,28 @@
+[env:esp32dev]
+platform = espressif32@^6.0.0
+board = esp32dev
+framework = arduino
+
+lib_deps =
+    HomeSpan
+monitor_speed = 115200
+upload_speed = 460800
+upload_port = COM3
+
+; Partition table
+board_build.partitions = default.csv
+
+; Flash settings
+board_upload.flash_size = 2MB
+board_upload.maximum_size = 2097152
+
+; Build flags
+build_flags =
+    -Wall
+
+; Optional: Serial monitor filters
+monitor_filters = esp32_exception_decoder
+
+platform_packages =
+    framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.0-rc1
+    platformio/toolchain-riscv32-esp @ 13.2.0+20230928

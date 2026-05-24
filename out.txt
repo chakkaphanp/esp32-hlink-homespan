@@ -1,0 +1,788 @@
+ESP32-C6-LCD-1.47 - Waveshare Wiki 
+ document.documentElement.className="client-js";RLCONF={"wgBreakFrames":!1,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"ad6b69a2d1a8a19eea10376f","wgCSPNonce":!1,"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":!1,"wgNamespaceNumber":0,"wgPageName":"ESP32-C6-LCD-1.47","wgTitle":"ESP32-C6-LCD-1.47","wgCurRevisionId":108132,"wgRevisionId":108132,"wgArticleId":20280,"wgIsArticle":!0,"wgIsRedirect":!1,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":[],"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"ESP32-C6-LCD-1.47","wgRelevantArticleId":20280,"wgIsProbablyEditable":!1,"wgRelevantPageIsProbablyEditable":!1,"wgRestrictionEdit":[],"wgRestrictionMove":[]};RLSTATE={"ext.gadget.tabber":"ready","site.styles":"ready",
+"noscript":"ready","user.styles":"ready","user":"ready","user.options":"loading","jquery.makeCollapsible.styles":"ready","mediawiki.toc.styles":"ready","skins.tweeki.styles":"ready","skins.tweeki.bootstraptheme.styles":"ready","skins.tweeki.externallinks.styles":"ready","skins.tweeki.awesome.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.startup","mediawiki.page.ready","jquery.makeCollapsible","mediawiki.toc","ext.FancyBoxThumbs","ext.HighlightjsIntegration","skins.tweeki.messages","skins.tweeki.scripts"]; 
+ (RLQ=window.RLQ||[]).push(function(){mw.loader.implement("user.options@1hzgi",function($,jQuery,require,module){/*@nomin*/mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+});});
+Navigation menu 
+				 
+					 
+
+						 
+							 
+								 Toggle navigation
+Raspberry Pi
+Boards/Kits
+Displays
+Cameras
+Expansions
+All-in-one
+Robots
+Portable Gaming
+Accessories
+Other Android/Linux Boards
+AI
+Boards/Kits
+Displays
+Cameras
+Expansions
+Robots
+Displays
+LCD/OLED
+e-Paper
+IoT
+Long Range Wireless
+Short Range Wireless
+Wired Comm / Converter
+Cameras / Audio / Video
+Sensors
+Motors / Servos
+others
+Robotics
+Mobile Robots
+Dog-like Robots
+Drivers / Sensors
+Robot Arm / Control
+MCU/FPGA
+Arduino
+micro:bit
+STM32
+FPGA
+Support
+ESP32-C6-LCD-1.47
+From Waveshare Wiki
+Jump to:					 navigation , 					 search
+ESP32-C6-LCD-1.47
+1.47 inch, I2C	SPI 172×320
+{{{name2}}}
+{{{name3}}}
+{{{name4}}}
+{{{name5}}}
+{{{name6}}}
+Primary Attribute
+Category:
+{{{userDefinedInfo}}}:
+ 
+ {{{userdefinedvalue}}}
+Brand:
+Waveshare
+Website
+International:
+Website
+Chinese:
+官网
+Onboard Interfaces
+Related Products
+Contents
+1
+Overview
+1.1
+Introduction
+1.2
+Features
+1.3
+Onboard Resources
+1.4
+Interfaces
+1.5
+Dimensions
+1.6
+Specifications
+2
+Usage Instructions
+2.1
+Development Tools
+2.1.1
+Arduino IDE
+2.1.2
+ESP-IDF
+2.2
+Components Preparation
+3
+Working with Arduino
+3.1
+Environment Setup
+3.1.1
+Download and install Arduino IDE
+3.1.2
+Install ESP32 development board
+3.1.3
+Install library
+3.2
+Run the First Arduino Demo
+3.2.1
+New Project
+3.2.2
+Compile and Flash Demos
+3.3
+Demo
+3.3.1
+Arduino project parameter setting
+3.3.2
+LVGL_Arduino
+3.3.3
+LCD_Image
+4
+Working with ESP-IDF
+4.1
+Environment Setup
+4.1.1
+Download and install Visual Studio
+4.1.2
+Install Espressif IDF Plugin
+4.2
+Run the First ESP-IDF Demo
+4.2.1
+New Project
+4.2.2
+Create Demo
+4.2.3
+Modify COM Port
+4.2.4
+Modify Driver Object
+4.2.5
+Other Status Bar Functions
+4.2.6
+Compile, Flash and Serial Port Monitor
+4.2.7
+Use the IDF Demos
+4.2.7.1
+Open In the Software
+4.2.7.2
+Open from Outside the Software
+4.2.7.3
+ESP-IDF Project Details
+4.3
+Demo
+4.3.1
+ESP32-C6-LCD-1.47-Test
+5
+Flash Firmware Flashing and Erasing
+6
+Resources
+6.1
+Schematic diagram
+6.2
+Demo
+6.3
+Project Diagram
+6.4
+Application Examples
+6.5
+Datasheets
+6.5.1
+ESP32-C6
+6.5.2
+Other Components
+6.6
+Software Tools
+6.6.1
+Arduino
+6.6.2
+VScode
+6.6.3
+Debugging Tool
+6.7
+Other Resource Links
+6.8
+Project Resources
+7
+FAQ
+8
+Support
+Overview
+Introduction
+ESP32-C6-LCD-1.47 is a microcontroller development board that supports 2.4GHz Wi-Fi 6 and BLE 5. It integrates 4MB Flash and has onboard 1.47inch LCD screen, can smoothly run GUI programs such as LVGL. Combined with various peripheral interfaces, it is suitable for the quick development of the HMI and other ESP32-C6 applications.
+Features
+Equipped with a high-performance 32-bit RISC-V processor with clock speed up to 160 MHz, and a low-power 32-bit RISC-V processor with clock speed as low as 20MHz 
+ Integrated WiFi 6, Bluetooth 5 and IEEE 802.15.4 (Zigbee 3.0 and Thread) wireless communication, with superior RF performance 
+ Built-in 320KB ROM, 512KB HP SRAM, 16KB LP SRAM, and 4MB flash 
+ Onboard 1.47inch LCD display, 172×320 resolution, 262K color 
+ Adapting most GPIOs, integrates full-speed USB serial port 
+ Onboard TF card slot, supporting external TF card storage for pictures or files 
+ Supports accurate control such as flexible clock and multiple power modes to realize low power consumption in different scenarios 
+ Onboard RGB color light beads, paired with transparent acrylic interlayer for cool lighting effects
+Onboard Resources
+1. ESP32-C6FH4
+2. ME6217C33M5G
+&#160;&#160;&#160;Low dropout regulator (LDO), 800mA output (Max)
+3. TF card slot
+4. Patch ceramic antenna
+5. BOOT button
+6. RESET button
+Interfaces
+LCD
+LCD Pin 
+ ESP32C6
+MOSI
+ 
+ GPIO6
+SCLK
+ 
+ GPIO7
+LCD_CS
+ 
+ GPIO14
+LCD_DC
+ 
+ GPIO15
+LCD_RST
+ 
+ GPIO21
+LCD_BL
+ 
+ GPIO22
+RGB light beads
+RGB light beads 
+ ESP32C6
+RGB_Control
+ 
+ GPIO8
+TF Card
+TF Card 
+ ESP32C6
+MISO
+ 
+ GPIO5
+MOSI
+ 
+ GPIO6
+SCLK
+ 
+ GPIO7
+CS
+ 
+ GPIO4
+SD_D1
+ 
+ NC
+SD_D2
+ 
+ NC
+Dimensions
+Specifications
+Parameter Name 
+ Parameter
+Interface
+ 
+ USB Type-C
+Controller chip
+ 
+ ESP32-C6
+LCD type
+ 
+ TFT
+LCD controller chip
+ 
+ Display: ST7789
+Onboard devices
+ 
+ TF
+Usage Instructions
+ESP32-C6-LCD-1.47 currently provides two development tools and frameworks,
+Arduino IDE
+and
+ESP-IDF , providing flexible development options, you can choose the right development tool according to your project needs and personal habits.
+Development Tools
+Arduino IDE
+Arduino IDE is an open source electronic prototyping platform, convenient and flexible, easy to get started. After a simple learning, you can start to develop quickly. At the same time, Arduino has a large global user community, providing an abundance of open source code, project examples and tutorials, as well as rich library resources, encapsulating complex functions, allowing developers to quickly implement various functions.
+ESP-IDF
+ESP-IDF, or full name Espressif IDE, is a professional development framework introduced by Espressif Technology for the ESP series chips. It is developed using the C language, including a compiler, debugger, and flashing tools, etc., and can be developed via the command lines or through an integrated development environment (such as Visual Studio Code with the Espressif IDF plugin). The plugin offers features such as code navigation, project management, and debugging.
+Each of these two development approaches has its own advantages, and developers can choose according to their needs and skill levels. Arduino are suitable for beginners and non-professionals because they are easy to learn and quick to get started. ESP-IDF is a better choice for developers with a professional background or high performance requirements, as it provides more advanced development tools and greater control capabilities for the development of complex projects.
+Components Preparation
+ESP32-C6-LCD-1.47 x1 
+ TF card x 1 
+ USB cable (Type-A to Type-C) x 1 
+ Card reader x1
+Before operating, it is recommended to browse the table of contents to quickly understand the document structure. For smooth operation, please read the
+FAQ
+carefully to understand possible problems in advance. All resources in the document are provided with hyperlinks for easy download.
+Working with Arduino
+This chapter introduces setting up the Arduino environment, including the Arduino IDE, management of ESP32 boards, installation of related libraries, program compilation and downloading, as well as testing demos. It aims to help users master the development board and facilitate secondary development.
+Environment Setup
+Download and install Arduino IDE
+Click to visit the
+Arduino official website , select the corresponding system and system bit to download
+Run the installer and install all by default
+Install ESP32 development board
+Regarding ESP32-related motherboards used with the Arduino IDE, the
+esp32 by Espressif Systems
+library must be installed first. 
+ According to
+Board installation requirement
+, it is generally recommended to use
+Install Online . If online installation fails, use
+Install Offline
+For the installation tutorial, please refer to
+Arduino board manager tutorial
+esp32 by Espressif Systems
+development board comes with an offline package. Click here to download:
+esp32_package_3.0.2_arduino offline package
+ESP32-C6-LCD-1.47 required development board installation description
+Board name 
+ Board installation requirement 
+ Version number requirement
+esp32 by Espressif Systems 
+ "Install Offline" / "Install Online" 
+ ≥3.0.0
+Install library
+When installing Arduino libraries, there are usually two ways to choose from:
+Install online
+and
+Install offline .
+If the library installation requires offline installation, you must use the provided library file
+For most libraries, users can easily search and install them through the online library manager of the Arduino software. However, some open-source libraries or custom libraries are not synchronized to the Arduino Library Manager, so they cannot be acquired through online searches. In this case, users can only manually install these libraries offline. 
+ For library installation tutorial, please refer to
+Arduino library manager tutorial
+ESP32-C6-LCD-1.47 library file is stored in the sample program, click here to jump:
+ESP32-C6-LCD-1.47 Demo
+ESP32-C6-LCD-1.47 library file installation description
+Library Name 
+ Description 
+ Version 
+ Library Installation Requirement
+LVGL 
+ Graphical library 
+ v8.3.10 
+ "Install Offline"
+PNGdec 
+ Decode PNG image formats 
+ v1.0.2 
+ "Install Offline"
+For more learning and use of LVGL, please refer to
+LVGL official documentation
+Run the First Arduino Demo
+If you are just getting started with ESP32 and Arduino, and you don't know how to create, compile, flash, and run Arduino ESP32 programs, then please expand and take a look. Hope it can help you!
+New Project
+Run the Arduino IDE and select
+File
+-&gt;
+New Sketch
+Enter the code:
+void setup() {
+// put your setup code here, to run once:
+Serial.begin(115200);
+}
+
+void loop() {
+// put your main code here, to run repeatedly:
+Serial.println(&quot;Hello, World!&quot;);
+delay(2000);
+}
+Save the project and select
+File
+-&gt;
+Save As...
+. In the pop-up menu, select the path to save the project, and enter a project name, such as
+Hello_World , click
+Save
+Compile and Flash Demos
+Select the corresponding development board, take the ESP32S3 motherboard as an example:
+①.
+Click to select the dropdown menu option
+Select Other Board and Port ;
+②.
+Search for the required development board model
+esp32s3 dev module
+and select;
+③.
+Select
+COM Port ;
+④.
+Save
+the selection.
+If the ESP32S3 mainboard only has a USB port, you need to enable
+USB CDC , as shown in the following diagram:
+Compile and upload the program:
+①.
+Compile the program;
+②.
+Compile and download the program;
+③.
+Download successful.
+Open the
+Serial Monitor
+window, and the demo will print "Hello World!" every 2 seconds, and the operation is as follows:
+Demo
+ESP32-C6-LCD-1.47 demos
+Demo 
+ Basic Description 
+ Dependency Library
+LVGL_Arduino 
+ Test onboard device functionality 
+ LVGL
+LCD_Image 
+ Display TF card root directory PNG file at intervals 
+ PNGdec
+Arduino project parameter setting
+LVGL_Arduino
+Demo description
+This example demonstrates the functions of each device on the board, LCD page displays SD Card, Flash Size, Wireless scan and other parameters
+Hardware connection
+Connect the development board to the computer 
+ Insert the TF card into the board
+Code analysis
+setup()
+Flash_test()
+: Tests and prints the flash memory size information of the device
+LCD_Init()
+: Initializes the display
+Lvgl_Init()
+: Initializes the LVGL graphics library
+SD_Init()
+: Initializes the TF card
+Lvgl_Example1()
+: Calls the specific LVGL example function
+Wireless_Test2()
+: Calls the test function for wireless communication
+loop()
+Timer_Loop()
+: Functions that handle timer-related tasks
+Demo flashing
+Select the development board ESP32S3 Dev Module and port 
+ Flash the demo
+Result demonstration
+LCD screen display
+For more learning and use of LVGL, please refer to
+LVGL official documentation
+LCD_Image
+TF card preparation
+Add the image examples provided by Waveshare into the TF card, and you can also add your own images (pixel ≤ 172×320)
+Hardware connection
+Insert the TF card containing example images into the device 
+ Connect the development board to the computer
+Code analysis
+void Display_Image(const char* directory, const char* fileExtension, uint16_t ID)
+First, call
+Search_Image(directory, fileExtension)
+search for image files with the specified extension in a given directory, and store the count of found images in the global variable
+Image_CNT
+If
+Image_CNT
+is not zero, one or more images have been found. Construct the full path of the image file based on whether the directory is a root directory, convert it to a C-style string for debugging purposes, and finally call the
+Show_Image
+function to display the image 
+ If no image is found (
+Image_CNT
+is zero), an error message is printed indicating that a file with the specified extension was not found in the given directory
+Result demonstration
+The LCD displays PNG files in the root directory of the TF card
+in sequence at regular intervals
+Working with ESP-IDF
+This chapter introduces setting up the
+ESP-IDF environment setup, including the installation of Visual Studio and the Espressif IDF plugin, program compilation, downloading, and testing of example programs, to assist users in mastering the development board and facilitating secondary development.
+Environment Setup
+Download and install Visual Studio
+Open the download page of
+VScode official website , choose the corresponding system and system bit to download
+After running the installation package, the rest can be installed by default, but here for the subsequent experience, it is recommended to check boxes 1, 2, and 3
+After the first two items are enabled, you can open VSCode directly by right-clicking files or directories, which can improve the subsequent user experience. 
+ After the third item is enabled, you can select VSCode directly when you choose how to open it.
+The environment setup is carried out on the Windows 10 system, Linux and Mac users can access
+ESP-IDF environment setup
+for reference
+Install Espressif IDF Plugin
+It is generally recommended to use
+Install Online . If online installation fails due to network factor, use
+Install Offline
+For more information about how to install the Espressif IDF plugin, see
+Install Espressif IDF Plugin
+ESP32-C6-LCD-1.47 required Espressif IDF version description
+Plugin name 
+ Plugin installation requirement 
+ Version number requirement
+Espressif IDF 
+ "Install Offline" / "Install Online" 
+ ≥5.3.1
+Run the First ESP-IDF Demo
+If you are just getting started with ESP32 and ESP-IDF, and you don't know how to create, compile, flash, and run ESP-IDF ESP32 programs, then please expand and take a look. Hope it can help you!
+New Project
+Create Demo
+Using the shortcut F1, enter esp-idf:show examples projects
+Select your current IDF version
+Take the Hello world demo as an example
+①Select the corresponding demo 
+②Its readme will state what chip the demo applies to (how to use the demo and the file structure are described below, omitted here) 
+③Click to create the demo
+Select the path to save the demo, and require that the demos cannot use folders with the same name
+Modify COM Port
+The corresponding COM ports are shown here, click to modify them
+Please select the COM ports according to your device (You can view it from the device manager)
+In case of a download failure, please press the Reset button for more than 1 second or enter download mode, and wait for the PC to recognize the device again before downloading once more
+Modify Driver Object
+Select the object we need to drive, which is our main chip ESP32S3
+Choose the openocd path, it doesn't affect us here, so let's just choose one
+Other Status Bar Functions
+①.ESP-IDF Development Environment Version Manager, when our project requires differentiation of development environment versions, it can be managed by installing different versions of ESP-IDF. When the project uses a specific version, it can be switched to by utilizing it 
+②.Device flashing COM port, select to flash the compiled program into the chip 
+③.Select set-target chip model, select the corresponding chip model, for example, ESP32-P4-NANO needs to choose esp32p4 as the target chip 
+④.menuconfig, click it to modify sdkconfig configuration file, please refer to
+project configuration details
+⑤.fullclean button, when the project compilation error or other operations pollute the compiled content, you can clean up all the compiled content by clicking it 
+⑥.Build project, when a project satisfies the build, click this button to compile 
+⑦.Current download mode, the default is UART 
+⑧.flash button, when a project build is completed, select the COM port of the corresponding development board, and click this button to flash the compiled firmware to the chip 
+⑨.monitor enable flashing port monitoring, when a project passes through Build --&gt; Flash, click this button to view the log of output from flashing port and debugging port, so as to observe whether the application works normally 
+⑩.Debug 
+⑪.Build Flash Monitor one-click button, which is used to continuously execute Build --&gt; Flash --&gt; Monitor, often referred to as "little flame"
+Compile, Flash and Serial Port Monitor
+Click on the all-in-one button we described before to compile, flash and open the serial port monitor
+It may take a long time to compile especially for the first time
+During this process, the ESP-IDF may take up a lot of CPU resources, so it may cause the system to lag
+If it is the first time to flash the program for a new project, you will need to select the download method, and select UART
+This can also be changed later in the Download methods section (click on it to pop up the options)
+As it comes with the onboard automatic download circuit, it can be downloaded automatically without manual operation 
+ After successful download, it will automatically enter the serial monitor, you can see the chip output the corresponding information and be prompted to restart after 10S
+Use the IDF Demos
+The following takes
+ESP32-S3-LCD-1.47-Demo
+as an example to introduce the two opening methods of the project and the general steps of use, and the detailed explanation of the ESP-IDF project. If you use other projects, the operation steps can be applied similarly.
+Open In the Software
+Open VScode software and select the folder to open the demo
+Select the provided ESP-IDF example and click to select the file (located in the /Demo/ESP-IDF path under demo)
+Open from Outside the Software
+Select the project directory correctly and open the project, otherwise it will affect the compilation and flashing of subsequent programs
+After connecting the device, select the COM port and model, click below to compile and flash to achieve program control
+ESP-IDF Project Details
+Component: The components in ESP-IDF are the basic modules for building applications, each component is usually a relatively independent code base or library, which can implement specific functions or services, and can be reused by applications or other components, similar to the definition of libraries in Python development.
+Component reference: The import of libraries in the Python development environment only requires to "import library name or path", while ESP-IDF is based on the C language, and the importing of libraries is configured and defined through
+CMakeLists.txt . 
+ The purpose of CmakeLists.txt: When compiling ESP-IDF, the build tool
+CMake
+first reads the content of the top-level
+CMakeLists.txt
+in the project directory to read the build rules and identify the content to be compiled. When the required components and demos are imported into the
+CMakeLists.txt , the compilation tool
+CMake
+will import each content that needs to be compiled according to the index. The compilation process is as follows:
+Demo
+ESP32-C6-LCD-1.47 demos
+Demo 
+ Basic Description 
+ Dependency Library
+ESP32-C6-LCD-1.47-Test 
+ Test onboard device functionality 
+ LVGL
+ESP32-C6-LCD-1.47-Test
+Demo description
+This example demonstrates the functions of each device on the board, LCD page displays SD Card, Flash Size, Wireless scan parameters and CPU utilization
+Hardware connection
+Connect the development board to the computer 
+ Insert the TF card into the board
+Code analysis
+setup()
+Wireless_Init()
+: Initializes the wireless communication module
+Flash_Searching()
+: Tests and prints the flash memory size information of the device
+RGB_Init()
+: Initializes RGB-related functions
+RGB_Example()
+: Displays example functions of RGB
+SD_Init()
+: Initializes the TF card
+LCD_Init()
+: Initializes the display
+BK_Light(50)
+: Sets the backlight brightness to 50
+LVGL_Init()
+: Initializes the LVGL graphics library
+Lvgl_Example1()
+: Calls the specific LVGL example function
+while(1)
+vTaskDelay(pdMS_TO_TICKS(10))
+: Short delay, every 10 milliseconds
+lv_timer_handler()
+: Timer handling function for LVGL, used to handle events and animations related to time
+Demo flashing
+Select the development board model ESP32C6 and port 
+ UART download 
+ Flash the demo
+Result demonstration
+LCD displays onboard parameters:
+Flash Firmware Flashing and Erasing
+The current demo provides test firmware, which can be used to test whether the onboard device functions properly by directly flashing the test firmware
+bin file path:
+..\ESP32-C6-LCD-1.47-Demo\Firmware
+Flash firmware flashing and erasing
+for reference
+Resources
+Schematic diagram
+ESP32-C6-LCD-1.47 Schematic diagram
+Demo
+ESP32-C6-LCD-1.47 Demo
+Project Diagram
+ESP32-C6-LCD-1.47 3D Drawing
+Application Examples
+Waveshare 1.47 Boards ESP32 C6
+ESP32-C6-LCD-1.47 LVGL UI Tutorial
+Waveshare ESP32-C6-LCD-1.47
+Datasheets
+ESP32-C6
+ESP32-C6 Technical Reference Manual
+ESP32-C6 Series Datasheet
+Other Components
+1.47inch LCD Datasheet
+Software Tools
+Arduino
+Arduino IDE Official download link
+ESP32_Arduino offline package
+VScode
+VScode official website
+Debugging Tool
+Flash_download_tool
+Other Resource Links
+ESP32-Arduino official documentation
+LVGL official documentation
+Project Resources
+This section features third - party project resources. We merely provide links and bear no responsibility for content updates or maintenance. Thank you for your understanding. 
+ Volos Projects-How to Interact with Your UI - LVGL and Squareline Studio
+Youtube:
+https://www.youtube.com/watch?v=KEcr22qZAVE
+Github:
+https://github.com/VolosR/WaveShareC6lvglexample
+nishad2m8- Flux Capacitor UI on ‬ 1.47" ESP32C6 | EEZ Studio &amp; LVGL
+Youtube:
+https://www.youtube.com/watch?v=pDeoPXndeUQ
+Github:
+https://github.com/nishad2m8/Squareline-OBP/tree/master/WaveShare/esp32-c6-1.47
+The Last Outpost Workshop- SD Card Video Player &amp; Crypto Price Monitor tutorial
+Youtube&#160;:
+https://www.youtube.com/watch?v=JqQEG0eipic
+Github&#160;:
+https://github.com/thelastoutpostworkshop/ESP32-C6-LCD-1.47_LVGL9_Crypto_Monitor
+https://github.com/thelastoutpostworkshop/ESP32-C6-LCD-1.47_video_player
+moononournation - Loki Miss Minutes clock
+Youtube&#160;:
+https://www.youtube.com/watch?v=e-Z9bq2xT2E
+Guide:
+https://www.instructables.com/GIF-Animation-Clock/
+Github&#160;:
+https://github.com/moononournation/animation_clock
+FAQ
+Question:
+After the module downloads the demo and re-downloads it, why sometimes it can't connect to the serial port or the flashing fails? 
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+Long press the BOOT button, press RESET at the same time, then release RESET, then release the BOOT button, at this time the module can enter the download mode, which can solve most of the problems that can not be downloaded.
+Question:
+Why does the module keep resetting and flicker when viewed the recognition status from the device manager? 
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+It may be due to Flash blank and the USB port is not stable, you can long-press the BOOT button, press RESET at the same time, and then release RESET, and then release the BOOT button, at this time the module can enter the download mode to flash the firmware (demo) to solve the situation.
+Question:
+How to deal with the first compilation of the program being extremely slow?
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+It's normal for the first compilation to be slow, just be patient
+Question:
+How to handle the display "waiting for download..." on the serial port after successfully ESP-IDF flashing? 
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+If there is a reset button on the development board, press the reset button; if there is no reset button, please power it on again
+Question:
+What should I do if I can't find the AppData folder? 
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+Some AppData folders are hidden by default and can be set to show. 
+ English system: Explorer-&gt;View-&gt;Check "Hidden items" 
+ Chinese system: File Explorer -&gt; View -&gt; Display -&gt; Check "Hidden Items"
+Question:
+How do I check the COM port I use? 
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+Windows system:
+①View through Device Manager: Press the Windows + R keys to open the "Run" dialog box; input devmgmt.msc and press Enter to open the Device Manager; expand the "Ports (COM and LPT)" section, where all COM ports and their current statuses will be listed.
+②Use the command prompt to view: Open the Command Prompt (CMD), enter the "mode" command, which will display status information for all COM ports.
+③Check hardware connections: If you have already connected external devices to the COM port, the device usually occupies a port number, which can be determined by checking the connected hardware.
+Linux system:
+①Use the dmesg command to view: Open the terminal.
+①Use the ls command to view: Enter ls /dev/ttyS* or ls /dev/ttyUSB* to list all serial port devices.
+③Use the setserial command to view: Enter setserial -g /dev/ttyS* to view the configuration information of all serial port devices.
+Question:
+Why does the program flashing fail when using a MAC device? 
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+Install
+MAC Driver
+and flash again.
+Question:
+Why is there no output after successfully flashing the code with no issues?
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+Check the schematic diagram for different development boards with Type-C interfaces, and handle the output accordingly:
+For development boards with direct USB output, printf function is supported for printing output. If you want to support output via the Serial function, you will need to enable the USB CDC On Boot feature or declare HWCDC. 
+ For development boards with UART to USB conversion, both printf and Serial functions are supported for printing output, and there is no need to enable USB CDC On Boot.
+Question:
+How to use SquareLine Studio to design interfaces?
+							 
+						 
+					 
+					 
+						 
+ &#160; Answer:
+Refer to
+SquareLine Studio tutorial
+Support
+Technical Support
+ 
+ 
+If you need technical support or have any feedback/review, please click the
+Submit Now
+button to submit a ticket, Our support team will check and reply to you within 1 to 2 working days. Please be patient as we make every effort to help you to resolve the issue.
+Working Time: 9 AM - 6 PM GMT+8 (Monday to Friday)
+Submit Now
+Retrieved from " https://www.waveshare.com/w/index.php?title=ESP32-C6-LCD-1.47&amp;oldid=108132 "
+Login / Create Account
+var fbtFancyBoxOptions = {};
+ 
+
+ (RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.239","walltime":"0.388","ppvisitednodes":{"value":1174,"limit":1000000},"postexpandincludesize":{"value":23143,"limit":2097152},"templateargumentsize":{"value":11069,"limit":2097152},"expansiondepth":{"value":8,"limit":40},"expensivefunctioncount":{"value":0,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":9067,"limit":5000000},"timingprofile":["100.00%
+106.906
+1 -total"," 27.12%
+28.990
+1 Template:Infobox_item"," 22.78%
+24.354
+9 Template:FAQ"," 12.74%
+13.616
+1 Template:Run_the_first_Arduino_demo"," 12.46%
+13.324
+1 Template:Run_the_first_ESP-IDF_demo"," 11.97%
+12.792
+8 Template:Note"," 11.25%
+12.032
+1 Template:Servicebox1","
+9.39%
+10.036
+1 Template:Amazon_nolink"]},"cachereport":{"timestamp":"20260509120537","ttl":0,"transientcontent":true}}});mw.config.set({"wgBackendResponseTime":807});}); 	 (function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f9092c70fc091b4',t:'MTc3ODMyODMzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
