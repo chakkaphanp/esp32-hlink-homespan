@@ -59,8 +59,12 @@ void setup() {
   if (!lcd.begin()) {
     Serial.println("[MAIN] WARNING: LCD not available");
   }
+
+  // --- BOOT Button ---
+  pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP);
  
   // --- HomeSpan ---
+  homeSpan.setControlPin(HOMESPAN_CONTROL_PIN);
   homeSpan.setWifiCredentials(WIFI_SSID, WIFI_PASSWORD);
   homeSpan.begin(Category::AirConditioners, HOMEKIT_NAME, "HLINK", "HLINK-AC-1");
   homeSpan.setQRID(HOMEKIT_SETUP_CODE);
@@ -110,6 +114,27 @@ void loop() {
  
   uint32_t now = millis();
  
+  // --- Read Boot Button to toggle screen ---
+  static bool lastBtnReading = HIGH;
+  static bool btnState = HIGH;
+  static uint32_t lastDebounceTime = 0;
+  
+  bool reading = digitalRead(BOOT_BUTTON_PIN);
+  if (reading != lastBtnReading) {
+    lastDebounceTime = now;
+  }
+  lastBtnReading = reading;
+
+  if ((now - lastDebounceTime) > 50) {
+    if (reading != btnState) {
+      btnState = reading;
+      if (btnState == LOW) { // Button pressed (active-low)
+        Serial.println("[MAIN] Boot button pressed - toggling screen");
+        lcd.toggleScreen();
+      }
+    }
+  }
+
   // --- Poll AC status via HLINK ---
   if (now - lastACPoll >= AC_POLL_INTERVAL_MS) {
     lastACPoll = now;
@@ -137,6 +162,6 @@ void loop() {
     struct tm timeInfo;
     bool timeValid = (rawTime > 1000000000) && localtime_r(&rawTime, &timeInfo);
     
-    lcd.update(lastBME, acState, timeValid ? &timeInfo : nullptr);
+    lcd.update(lastBME, acState, timeValid ? &timeInfo : nullptr, hlink.getStats());
   }
 }

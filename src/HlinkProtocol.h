@@ -118,7 +118,13 @@ struct HlinkACState {
 
 };
 
- 
+struct HlinkStats {
+  uint32_t txFrames = 0;
+  uint32_t rxFrames = 0;
+  uint32_t rxErrors = 0;
+  char lastTxStr[32] = "None";
+  char lastRxStr[32] = "None";
+};
 
 class HlinkProtocol {
 
@@ -164,7 +170,8 @@ public:
 
   bool canSendNow() const;
 
- 
+  HlinkStats getStats() const { return _stats; }
+  void resetStats() { _stats = HlinkStats(); }
 
 private:
 
@@ -172,7 +179,7 @@ private:
 
   uint32_t _lastFrameMs = 0;
 
- 
+  HlinkStats _stats;
 
   // Internal poll state machine
 

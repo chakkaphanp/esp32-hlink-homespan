@@ -27,6 +27,9 @@
 #define LCD_WIDTH      172
 #define LCD_HEIGHT     320
 
+#define BOOT_BUTTON_PIN       9   // Onboard BOOT button
+#define HOMESPAN_CONTROL_PIN  10  // Unused GPIO to redirect HomeSpan's control button
+
 
 
 // ===== BME280 I2C Pins =====

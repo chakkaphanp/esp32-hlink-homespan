@@ -58,6 +58,15 @@ void HlinkProtocol::sendFrame(const char *type, uint16_t address, const uint8_t 
   _serial->print(msg);
   _lastFrameMs = millis();
   Serial.printf("[HLINK] TX: %s\n", msg);
+
+  // Update stats
+  _stats.txFrames++;
+  size_t len = strlen(msg);
+  if (len > 0 && msg[len - 1] == '\r') {
+    msg[len - 1] = '\0';
+  }
+  strncpy(_stats.lastTxStr, msg, sizeof(_stats.lastTxStr) - 1);
+  _stats.lastTxStr[sizeof(_stats.lastTxStr) - 1] = '\0';
 }
 
  
@@ -77,6 +86,9 @@ HlinkResponse HlinkProtocol::readFrame() {
       if (idx >= HLINK_BUF_SIZE - 1) {
         Serial.println("[HLINK] RX buffer overflow");
         resp.status = HlinkStatus::INVALID;
+        _stats.rxErrors++;
+        strncpy(_stats.lastRxStr, "ERR: OVERFLOW", sizeof(_stats.lastRxStr) - 1);
+        _stats.lastRxStr[sizeof(_stats.lastRxStr) - 1] = '\0';
         return resp;
       }
       char c = _serial->read();
@@ -95,18 +107,28 @@ HlinkResponse HlinkProtocol::readFrame() {
 
   if (idx == 0) {
     Serial.println("[HLINK] RX timeout - no data");
+    _stats.rxErrors++;
+    strncpy(_stats.lastRxStr, "ERR: TIMEOUT", sizeof(_stats.lastRxStr) - 1);
+    _stats.lastRxStr[sizeof(_stats.lastRxStr) - 1] = '\0';
     return resp; // NONE
   }
 
   buf[idx] = '\0';
   Serial.printf("[HLINK] RX timeout - partial: %s\n", buf);
   resp.status = HlinkStatus::PARTIAL;
+  _stats.rxErrors++;
+  strncpy(_stats.lastRxStr, "ERR: PARTIAL", sizeof(_stats.lastRxStr) - 1);
+  _stats.lastRxStr[sizeof(_stats.lastRxStr) - 1] = '\0';
   return resp;
  
 
 parse:
   Serial.printf("[HLINK] RX: %s\n", buf);
   _lastFrameMs = millis(); 
+
+  _stats.rxFrames++;
+  strncpy(_stats.lastRxStr, buf, sizeof(_stats.lastRxStr) - 1);
+  _stats.lastRxStr[sizeof(_stats.lastRxStr) - 1] = '\0';
 
   // Tokenize: "OK P=XXXX C=XXXX" or "NG P=XXXX C=XXXX" or "OK"
   // Find first space
@@ -125,6 +147,7 @@ parse:
 
   if (tokenCount == 0) {
     resp.status = HlinkStatus::INVALID;
+    _stats.rxErrors++;
     return resp;
   }
 
@@ -136,6 +159,7 @@ parse:
 
   if (!isOK && !isNG) {
     resp.status = HlinkStatus::INVALID;
+    _stats.rxErrors++;
     return resp;
   }
 
@@ -149,6 +173,7 @@ parse:
 
   if (tokenCount != 3) {
     resp.status = HlinkStatus::INVALID;
+    _stats.rxErrors++;
     return resp;
   }
 
@@ -186,6 +211,7 @@ parse:
     if (rxCheck != calcCheck) {
       Serial.printf("[HLINK] Checksum mismatch: got %04X expected %04X\n", rxCheck, calcCheck);
       resp.status = HlinkStatus::INVALID;
+      _stats.rxErrors++;
     }
   } 
 
