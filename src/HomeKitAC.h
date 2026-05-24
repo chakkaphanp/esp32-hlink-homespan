@@ -1,17 +1,14 @@
 
 #include <HomeSpan.h>
-
 #include "HlinkProtocol.h"
-
 #include "config.h"
-
- 
+#include <ir_Hitachi.h>
 
 // Forward declaration
-
 extern HlinkProtocol hlink;
-
 extern HlinkACState  acState;
+extern bool useIRMode;
+extern IRHitachiAc264 irac;
 
  
 
@@ -92,6 +89,66 @@ struct AC_HeaterCooler : Service::HeaterCooler {
  
 
   boolean update() override {
+    if (useIRMode) {
+      // 1. Synchronize acState with HomeKit characteristics
+      acState.powerOn = active->updated() ? active->getNewVal() : active->getVal();
+      
+      int targetMode = targetState->updated() ? targetState->getNewVal() : targetState->getVal();
+      switch (targetMode) {
+        case 0: acState.hlinkMode = HLINK_MODE_COOL; break; // Auto -> Cool
+        case 1: acState.hlinkMode = HLINK_MODE_HEAT; break; // Heat
+        case 2: acState.hlinkMode = HLINK_MODE_COOL; break; // Cool
+        default: acState.hlinkMode = HLINK_MODE_COOL; break;
+      }
+      
+      if (acState.hlinkMode == HLINK_MODE_HEAT) {
+        acState.targetTemp = heatThreshold->updated() ? heatThreshold->getNewVal<float>() : heatThreshold->getVal<float>();
+      } else {
+        acState.targetTemp = coolThreshold->updated() ? coolThreshold->getNewVal<float>() : coolThreshold->getVal<float>();
+      }
+      
+      int fanSpeedPercent = rotationSpeed->updated() ? rotationSpeed->getNewVal() : rotationSpeed->getVal();
+      if (fanSpeedPercent <= 0)       acState.fanSpeed = HLINK_FAN_AUTO;
+      else if (fanSpeedPercent <= 25) acState.fanSpeed = HLINK_FAN_QUIET;
+      else if (fanSpeedPercent <= 50) acState.fanSpeed = HLINK_FAN_LOW;
+      else if (fanSpeedPercent <= 75) acState.fanSpeed = HLINK_FAN_MEDIUM;
+      else                            acState.fanSpeed = HLINK_FAN_HIGH;
+      
+      acState.valid = true;
+
+      // 2. Set up IR sender
+      irac.setPower(acState.powerOn);
+      
+      uint8_t irMode;
+      switch (acState.hlinkMode) {
+        case HLINK_MODE_HEAT: irMode = kHitachiAc264Heat; break;
+        case HLINK_MODE_COOL: irMode = kHitachiAc264Cool; break;
+        case HLINK_MODE_DRY:  irMode = kHitachiAc264Dry;  break;
+        case HLINK_MODE_FAN:  irMode = kHitachiAc264Fan;  break;
+        default:              irMode = kHitachiAc264Cool; break;
+      }
+      irac.setMode(irMode);
+      
+      irac.setTemp((uint8_t)acState.targetTemp);
+      
+      uint8_t irFan;
+      switch (acState.fanSpeed) {
+        case HLINK_FAN_QUIET:  irFan = kHitachiAc264FanMin;    break; // Min
+        case HLINK_FAN_LOW:    irFan = kHitachiAc264FanMin;    break; // Min (Low is same)
+        case HLINK_FAN_MEDIUM: irFan = kHitachiAc264FanMedium; break;
+        case HLINK_FAN_HIGH:   irFan = kHitachiAc264FanHigh;   break;
+        case HLINK_FAN_AUTO:
+        default:               irFan = kHitachiAc264FanAuto;   break;
+      }
+      irac.setFan(irFan);
+
+      // 3. Transmit the IR command
+      irac.send();
+      Serial.printf("[IR] Sent Hitachi AC264 command: Power=%s, Mode=%u (IR Mode=%u), Temp=%.0f C, FanSpeed=%u\n",
+                    acState.powerOn ? "ON" : "OFF", acState.hlinkMode, irMode, acState.targetTemp, irFan);
+      
+      return true;
+    }
 
     // --- Active (power on/off) ---
 

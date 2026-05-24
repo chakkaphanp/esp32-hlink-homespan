@@ -57,6 +57,11 @@
 #define AC_TEMP_MIN 10.0f
 #define AC_TEMP_MAX 32.0f
 
+
+// ===== IR Configuration =====
+#define IR_SEND_PIN           3      // GPIO pin for the IR transmitter (Hitachi AC264)
+#define DEFAULT_USE_IR_MODE   false  // Default mode: false = HLINK, true = IR
+
  
 
 // ===== Polling Intervals (ms) =====

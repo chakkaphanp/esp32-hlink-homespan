@@ -6,6 +6,8 @@
 #include "BME280Sensor.h"
 #include "HlinkProtocol.h"
 
+extern bool useIRMode;
+
 // Colors (RGB565)
 constexpr uint16_t COL_BG          = 0x0000;  // Deep black background
 constexpr uint16_t COL_CARD_BORDER = 0x3186;  // Sleek dark gray card border
@@ -74,6 +76,12 @@ public:
     drawStaticLayout();
     invalidateCache();
     Serial.printf("[LCD] Switched screen to: %d\n", (int)_currentScreen);
+  }
+
+  void forceRedraw() {
+    _gfx->fillScreen(COL_BG);
+    drawStaticLayout();
+    invalidateCache();
   }
 
   void invalidateCache() {
@@ -325,8 +333,8 @@ private:
 
       // Card 3: AC Status
       _gfx->drawRoundRect(166, 80, 148, 86, 8, COL_CARD_BORDER);
-      _gfx->setCursor(213, 88); // Centered: 166 + 148/2 - (9 chars * 6)/2 = 240 - 27 = 213.
-      _gfx->print("AC STATUS");
+      _gfx->setCursor(useIRMode ? 198 : 213, 88); // Centered for "AC STATUS (IR)" (14 chars) vs "AC STATUS" (9 chars)
+      _gfx->print(useIRMode ? "AC STATUS (IR)" : "AC STATUS");
       _gfx->drawFastHLine(174, 98, 132, COL_CARD_BORDER);
     } else {
       // Card 1: HLINK Stats

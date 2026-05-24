@@ -13,12 +13,17 @@
 
  
 
+#include <ir_Hitachi.h>
+
 // ===== Global objects =====
 
 HlinkProtocol hlink;
 HlinkACState  acState;
 BME280Sensor  bme;
 Display       lcd;
+
+bool useIRMode = DEFAULT_USE_IR_MODE;
+IRHitachiAc264 irac(IR_SEND_PIN);
 
  
 
@@ -49,6 +54,19 @@ void setup() {
  
   // --- HLINK UART ---
   hlink.begin(Serial1, HLINK_TX_PIN, HLINK_RX_PIN, HLINK_BAUD);
+ 
+  // --- IR Sender ---
+  irac.begin();
+  Serial.printf("[MAIN] IR Sender initialized on pin %d (default mode: %s)\n", IR_SEND_PIN, useIRMode ? "IR" : "HLINK");
+
+  if (useIRMode) {
+    acState.powerOn = false;
+    acState.hlinkMode = HLINK_MODE_COOL;
+    acState.fanSpeed = HLINK_FAN_AUTO;
+    acState.targetTemp = 24.0f;
+    acState.currentTemp = 20.0f;
+    acState.valid = true;
+  }
  
   // --- BME280 ---
   if (!bme.begin()) {
@@ -114,10 +132,11 @@ void loop() {
  
   uint32_t now = millis();
  
-  // --- Read Boot Button to toggle screen ---
+  // --- Read Boot Button to toggle screen & mode ---
   static bool lastBtnReading = HIGH;
   static bool btnState = HIGH;
   static uint32_t lastDebounceTime = 0;
+  static uint32_t btnPressTime = 0;
   
   bool reading = digitalRead(BOOT_BUTTON_PIN);
   if (reading != lastBtnReading) {
@@ -129,8 +148,33 @@ void loop() {
     if (reading != btnState) {
       btnState = reading;
       if (btnState == LOW) { // Button pressed (active-low)
-        Serial.println("[MAIN] Boot button pressed - toggling screen");
-        lcd.toggleScreen();
+        btnPressTime = now;
+      } else { // Button released
+        uint32_t pressDuration = now - btnPressTime;
+        if (pressDuration >= 1500) {
+          // Long press: toggle IR mode
+          useIRMode = !useIRMode;
+          Serial.printf("[MAIN] Boot button long pressed (%u ms) - toggled IR Mode to %s\n",
+                        pressDuration, useIRMode ? "ON" : "OFF");
+          
+          if (useIRMode) {
+            acState.valid = true;
+            if (lastBME.valid) {
+              acState.currentTemp = lastBME.temperature;
+            }
+            if (pHeaterCooler) {
+              pHeaterCooler->refreshFromAC();
+            }
+          } else {
+            acState.valid = false; // Re-trigger HLINK poll discovery
+          }
+          
+          lcd.forceRedraw();
+        } else {
+          // Short press: toggle screen
+          Serial.printf("[MAIN] Boot button short pressed (%u ms) - toggling screen\n", pressDuration);
+          lcd.toggleScreen();
+        }
       }
     }
   }
@@ -138,9 +182,11 @@ void loop() {
   // --- Poll AC status via HLINK ---
   if (now - lastACPoll >= AC_POLL_INTERVAL_MS) {
     lastACPoll = now;
-    bool cycleComplete = hlink.pollStatus(acState);
-    if (cycleComplete && pHeaterCooler) {
-      pHeaterCooler->refreshFromAC();
+    if (!useIRMode) {
+      bool cycleComplete = hlink.pollStatus(acState);
+      if (cycleComplete && pHeaterCooler) {
+        pHeaterCooler->refreshFromAC();
+      }
     }
   }
  
@@ -151,6 +197,11 @@ void loop() {
     if (lastBME.valid) {
       if (pRoomTemp)  pRoomTemp->setTemperature(lastBME.temperature);
       if (pRoomHumid) pRoomHumid->setHumidity(lastBME.humidity);
+      
+      if (useIRMode) {
+        acState.currentTemp = lastBME.temperature;
+        acState.valid = true;
+      }
     }
   }
  
